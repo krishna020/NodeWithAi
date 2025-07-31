@@ -8,7 +8,6 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const getuser = async (req, res) => {
   try {
-    console.log("process.env.OPENAI_API_KEY:", process.env.OPENAI_API_KEY);
     const users = await User.find();
     return res.status(200).json({
       status: true,
