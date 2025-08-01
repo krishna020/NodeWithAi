@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const OpenAI = require("openai");
 const dotenv = require("dotenv");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 
 dotenv.config({ path: path.join(__dirname, ".env") });
 
@@ -64,4 +65,52 @@ const getWetherInfo = async (req, res) => {
   }
 };
 
-module.exports = { getuser, createUser, getWetherInfo };
+const userLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        status: false,
+        message: "Please Enter User name or password",
+      });
+    }
+
+    const userInfo = await User.findOne({ email: email });
+    let token;
+
+    if (!userInfo) {
+      return res.status(404).json({
+        status: false,
+        message: "User Not Found",
+      });
+    }
+    if (bcrypt.compare(password, userInfo.password)) {
+      token = jwt.sign(
+        { id: userInfo._id, email: userInfo.email },
+        process.env.SECRET_KEY,
+        { expiresIn: "7d" }
+      );
+    }
+
+    return res.status(200).json({
+      status: true,
+      message: "Login successful",
+      token: token,
+      user: {
+        id: userInfo._id,
+        email: userInfo.email,
+        name: userInfo.name,
+      },
+    });
+  } catch (err) {
+    console.log("error: ", err);
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
+
+module.exports = { getuser, createUser, getWetherInfo, userLogin };
