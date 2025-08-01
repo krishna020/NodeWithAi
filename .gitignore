@@ -1,0 +1,8 @@
+# ignore the node module
+node_modules/
+
+#ignore the git ignore file
+#.gitignore
+
+# ignore the .env file
+src/.env
