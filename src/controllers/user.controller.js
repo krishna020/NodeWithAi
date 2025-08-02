@@ -1,11 +1,12 @@
 const express = require("express");
 const userCreate = require("../services/user.service.js");
+const auth = require("../helpers/middleware.js");
 
 const router = express.Router();
 
-router.get("/getUser", getuser);
+router.get("/getUser", auth, getuser);
 
-router.post("/createUser", createUser);
+router.post("/createUser", auth, createUser);
 
 router.get("/getWetherInfo", getWetherInfo);
 
