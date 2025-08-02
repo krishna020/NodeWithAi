@@ -9,10 +9,10 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const getuser = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ status: "active" });
     return res.status(200).json({
       status: true,
-      message: "user created successfully",
+      message: "user fetched successfully",
       result: users,
     });
   } catch (err) {
@@ -27,17 +27,21 @@ const getuser = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
+    const { fullName, email, password, phone, address } = req.body;
     const hashPassword = await bcrypt.hash(req.body.password, 10);
     const userData = new User({
-      name: req.body.name,
-      email: req.body.email,
+      fullName: fullName,
+      email: email,
       password: hashPassword,
+      phone: phone,
+      address: address,
     });
 
     await userData.save();
     return { status: 200, message: "User created successfully." };
-  } catch (error) {
-    return { status: 500, message: err };
+  } catch (err) {
+    console.log("error:", err);
+    return { status: 500, message: err.message };
   }
 };
 
@@ -113,4 +117,25 @@ const userLogin = async (req, res) => {
   }
 };
 
-module.exports = { getuser, createUser, getWetherInfo, userLogin };
+const deleteUser = async (req, res) => {
+  try {
+    const id = req.body.id;
+
+    const updateUser = await User.updateOne(
+      { _id: id },
+      { status: "deactive" }
+    );
+    return res
+      .status(200)
+      .json({ status: true, message: "User Delete successfully" });
+  } catch (err) {
+    console.log("error: ", err);
+    return res.status(500).json({
+      status: false,
+      message: "Internal server error",
+      error: err.message,
+    });
+  }
+};
+
+module.exports = { getuser, createUser, getWetherInfo, userLogin, deleteUser };

@@ -2,7 +2,8 @@ const http = require("http");
 const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
-const user = require("./controllers/user.controller.js");
+const routes = require("./routers/user.router.js");
+
 const bodyParser = require("body-parser");
 const connectDB = require("./db/conn.js");
 const { swaggerUi, swaggerSpec } = require("../swagger.js");
@@ -24,4 +25,4 @@ const options = {};
 const server = http.createServer(options, app).listen(port, hostname, () => {
   console.log(`HTTP Server listening on https://${hostname}:${port}`);
 });
-app.use("/user/api/v1", user);
+app.use("/api/v1", routes);

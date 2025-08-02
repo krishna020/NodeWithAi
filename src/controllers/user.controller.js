@@ -2,16 +2,6 @@ const express = require("express");
 const userCreate = require("../services/user.service.js");
 const auth = require("../helpers/middleware.js");
 
-const router = express.Router();
-
-router.get("/getUser", auth, getuser);
-
-router.post("/createUser", auth, createUser);
-
-router.get("/getWetherInfo", getWetherInfo);
-
-router.post("/login", userLogin);
-
 function getuser(req, res, next) {
   userCreate
     .getuser(req, res)
@@ -57,4 +47,20 @@ function userLogin(req, res, next) {
     .catch((err) => next(err));
 }
 
-module.exports = router;
+function deleteUser(req, res, next) {
+  userCreate
+    .deleteUser(req, res)
+    .then((user) =>
+      user ? res.json(user) : res.status(400).json({ message: "OK" })
+    )
+    .catch((err) => next(err));
+}
+
+module.exports = {
+  getuser,
+  createUser,
+  summarizeText,
+  getWetherInfo,
+  userLogin,
+  deleteUser,
+};
